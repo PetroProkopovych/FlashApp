@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!--
+        Customize this policy to fit your own app's needs. For more guidance, see:
+            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+        Some notes:
+            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+                * Enable inline JS: add 'unsafe-inline' to default-src
+        -->
+        <!--<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">-->
+        <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <!--<link rel="stylesheet" type="text/css" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">-->
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+		<link rel="stylesheet" type="text/css" href="js/jquery-1.5.0.mobile.min.css">
+		<style>
+		/* For avoiding title truncation in wp8 */
+		.ui-header .ui-title {
+				overflow: visible !important;
+		}
+		/* For fixing the absolute position issue for the default cordova gen page*/
+		#cjp-accordion1 .app {
+				left: 5px !important;
+				margin: 5px !important;
+				position: relative !important;
+		}
+		</style>
+        <title>Hello World</title>
+    </head>
+    <body>
+        <div class="app">
+            <h1>Apache Cordova</h1>
+            <div id="deviceready" class="blink">
+                <p class="event listening">Connecting to Device</p>
+                <p class="event received">Device is Ready</p>
+            </div>
+        </div>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/jquery-1.11.1.min.js" id="cordova-jquery"></script>
+		<script type="text/javascript" id="jqm-trans-disable">
+		/* For having a faster transition */
+		$(document).on("mobileinit", function() {
+				$.mobile.defaultPageTransition = "none";
+				$.mobile.defaultDialogTransition = "none";
+		});
+		</script>
+        <script type="text/javascript" src="js/jquery-1.5.0.mobile.min.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <!--<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>-->
+        <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+
+        <input type="text" value="192.168.1.44" id="url"> <br>
+        <input type="hidden" id="img"/>
+        <button id="test" onclick="test()">Test ajax</button> <br>
+        <button id="alert">Simple alert</button> <br>
+        <button onclick="capturePhoto();">Capture Photo</button> <br>
+        <br>
+        <br>
+        <br>
+        <button onclick="sendImg($('#img').val())">Send</button> <br>
+
+        <p class="cordova">device.cordova</p> <br>
+        <input type="text" value="" id="cordova"> <br>
+        <p class="model">device.model</p> <br>
+        <input type="text" value="" id="model"> <br>
+        <p class="platform">device.platform</p> <br>
+        <input type="text" value="" id="platform"> <br>
+        <p class="uuid">device.uuid</p> <br>
+        <input type="text" value="" id="uuid"> <br>
+        <p class="version">device.version</p> <br>
+        <input type="text" value="" id="version"> <br>
+        <p class="manufacturer">device.manufacturer</p> <br>
+        <input type="text" value="" id="manufacturer"> <br>
+        <p class="isVirtual">device.isVirtual</p> <br>
+        <input type="text" value="" id="isVirtual"> <br>
+        <p class="serial">device.serial</p> <br>
+        <input type="text" value="" id="serial"> <br>
+
+        <img style="display:none;width:60px;height:60px;" id="smallImage" src="" />
+        <script type="text/javascript">
+
+            var pictureSource;   // picture source
+            var destinationType; // sets the format of returned value
+            // Wait for device API libraries to load
+            document.addEventListener("deviceready",onDeviceReady,false);
+            // device APIs are available
+            function onDeviceReady() {
+                pictureSource=navigator.camera.PictureSourceType;
+                destinationType=navigator.camera.DestinationType;
+                $.support.cors=true;
+                deviceInfo();
+            }
+
+            function deviceInfo() {
+                $('#cordova').val(device.cordova);
+                $('#model').val(device.model);
+                $('#platform').val(device.platform);
+                $('#uuid').val(device.uuid);
+                $('#version').val(device.version);
+                $('#manufacturer').val(device.manufacturer);
+                $('#isVirtual').val(device.isVirtual);
+                $('#serial').val(device.serial);
+            }
+
+            function capturePhoto() {
+                // Take picture using device camera and retrieve image as base64-encoded string
+                navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 50,
+                    destinationType: destinationType.DATA_URL });
+            }
+            // Called if something bad happens.
+            function onFail(message) {
+                alert('Failed because: ' + message);
+            }
+            // Called when a photo is successfully retrieved
+            function onPhotoDataSuccess(imageData) {
+                // Uncomment to view the base64-encoded image data
+                // console.log(imageData);
+                // Get image handle
+                var smallImage = document.getElementById('smallImage');
+                // Unhide image elements
+                smallImage.style.display = 'block';
+                // Show the captured photo
+                // The in-line CSS rules are used to resize the image
+                smallImage.src = "data:image/jpeg;base64," + imageData;
+
+                $('#img').val(imageData);
+            }
+
+
+            $("#alert").click(function () {
+                alert("works!");
+                alert($('#url').val());
+            });
+
+            function test() {
+                $.ajax({
+                    url: "http://192.168.1.35:8080/test",
+                    type : "GET",
+                    data: ({
+                        test: "test2",
+                    }),
+                    success: function (data) {
+                        alert(data);
+                    },
+                    error: function (xhr) {
+                        alert(xhr);
+                    }
+                });
+            }
+            /*function success(json) {
+                alert(json);
+            }
+            function test1() {
+                $.ajax({
+                    url: "http://192.168.1.35:8080/test",
+                    type : "GET",
+                    dataType : 'jsonp',
+                    jsonpCallback : 'success',
+                    data: ({
+                        test: "test2",
+                    }),
+                    error: function (xhr) {
+                        alert(xhr);
+                    }
+                });
+            }
+
+            function test2() {
+                //$.support.cors=true;
+                $.ajax({
+                    url: "http://192.168.1.35:8080/test",
+                    type : "GET",
+                    dataType : 'jsonp',
+                    context: document.body,
+                    cache : false,
+                    data: ({
+                        test: "test2",
+                    }),
+                    success: function (data) {
+                        alert(date);
+                    },
+                    error: function (xhr) {
+                        alert(xhr);
+                    }
+                });
+            }*/
+
+            function sendImg(imgData) {
+                var url = "http://"+$('#url').val()+":8080/img";
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: ({
+                        img: imgData,
+                    }),
+                    success: function (data) {
+                        alert("success");
+                        //$('#url').val("success");
+                    },
+                    error: function (xhr) {
+                        alert(xhr.status);
+                        alert(xhr.responseText);
+                        //$('#url').val("errror");
+                    }
+                });
+            }
+        </script>
+    </body>
+</html>
