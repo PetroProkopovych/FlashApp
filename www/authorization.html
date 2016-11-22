@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="authorization" style="display: none">
+    <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="email" placeholder="email">
+    <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="password" placeholder="password">
+    <button style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="button" id="send">Enter</button>
+</div>
+<div id="add-news">
+    <form id="add-news-form" enctype="multipart/form-data">
+        <textarea id="title" placeholder="title" rows="3" maxlength="300" style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box; resize: none"></textarea>
+        <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="hashtag1" placeholder="hashtag1">
+        <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="hashtag2" placeholder="hashtag2">
+        <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="hashtag3" placeholder="hashtag3">
+        <input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="images" accept="image/*" multiple>
+        <input type="submit" style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" value="Add">
+    </form>
+</div>
+
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script>
+    $('#add-news-form').submit(function(e) {
+        e.preventDefault();
+        var data = new FormData();
+        data.append('title', $('#title').val());
+        $(this).find('input').each(function() {
+            if ($(this).attr('type') != 'submit' && $(this).attr('type') != 'file' && $(this).val() != '') {
+                data.append($(this).attr('id'), $(this).val());
+            }
+        });
+        var fileControl = document.getElementById('images');
+        for(var i = 0; i < fileControl.files.length; i++) {
+            data.append('file', fileControl.files[i]);
+        }
+        /*for (var key of data.keys()) {
+            console.log(key + ' - ' + data.get(key));
+        }*/
+        $.ajax({
+            type: "POST",
+            url: "addNews",
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                if (!data.error) {
+                    alert('success');
+                }
+                else {
+                    alert('error');
+                }
+            },
+            error: function (xhr) {
+                alert('Ошибка сервера');
+            }
+        });
+    });
+</script>
+</body>
+</html>
