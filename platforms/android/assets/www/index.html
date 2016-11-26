@@ -34,6 +34,7 @@
         <title>Hello World</title>
     </head>
     <body>
+    <a href="authorization.html" style="text-transform: none; width: calc(100% - 20px); border: 1px solid #aaa; border-radius: 3px; background: #ccc; color: #555; display: block; padding: 10px; text-align: center; margin: 10px; box-sizing: border-box">Authorization</a>
         <div class="app">
             <h1>Apache Cordova</h1>
             <div id="deviceready" class="blink">
@@ -141,7 +142,7 @@
 
             function test() {
                 $.ajax({
-                    url: "http://192.168.1.35:8080/test",
+                    url: "http://"+$('#url').val()+":8080/test",
                     type : "GET",
                     data: ({
                         test: "test2",
