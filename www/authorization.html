@@ -5,18 +5,20 @@
     <title>Title</title>
 </head>
 <body>
-<div id="authorization">
+<div id="authorization" style="display: none">
     <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="email" placeholder="email">
     <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="password" placeholder="password">
     <button style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="button" id="send">Enter</button>
 </div>
-<div id="add-news" style="display: none">
+<div id="add-news" >
     <form id="add-news-form" enctype="multipart/form-data">
         <textarea id="title" placeholder="title" rows="3" maxlength="300" style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box; resize: none"></textarea>
         <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="hashtag1" placeholder="hashtag1">
         <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="hashtag2" placeholder="hashtag2">
         <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="hashtag3" placeholder="hashtag3">
-        <input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="images" accept="image/*" multiple>
+        <div class="images">
+            <input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="image-1" accept="image/*" multiple>
+        </div>
         <input type="submit" style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" value="Add">
     </form>
 </div>
@@ -81,6 +83,11 @@
                 alert('Ошибка сервера');
             }
         });
+    });
+    $('.images').on('change', 'input', function() {
+        if($(this).is(':last-child') && $('.images input').length < 8) {
+            $('.images').append('<input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="image-' + (+$(this).attr('id').split('-')[1] + 1) + '" accept="image/*" multiple>');
+        }
     });
 </script>
 </body>
