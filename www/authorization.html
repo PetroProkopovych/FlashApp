@@ -17,7 +17,7 @@
         <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="hashtag2" placeholder="hashtag2">
         <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="hashtag3" placeholder="hashtag3">
         <div class="images">
-            <input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="image-1" accept="image/*" multiple>
+            <input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="image-1" accept="image/*">
         </div>
         <input type="submit" style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" value="Add">
     </form>
@@ -58,13 +58,15 @@
                 data.append($(this).attr('id'), $(this).val());
             }
         });
-        var fileControl = document.getElementById('images');
-        for(var i = 0; i < fileControl.files.length; i++) {
-            data.append('file', fileControl.files[i]);
-        }
-        /*for (var key of data.keys()) {
+        $(this).find('.images input').each(function() {
+            var fileControl = document.getElementById($(this).attr('id'));
+            if(fileControl.files.length > 0) {
+                data.append($(this).attr('id'), fileControl.files[0]);
+            }
+        });
+        for (var key of data.keys()) {
             console.log(key + ' - ' + data.get(key));
-        }*/
+        }
         $.ajax({
             type: "POST",
             url: "addNews",
@@ -86,7 +88,7 @@
     });
     $('.images').on('change', 'input', function() {
         if($(this).is(':last-child') && $('.images input').length < 8) {
-            $('.images').append('<input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="image-' + (+$(this).attr('id').split('-')[1] + 1) + '" accept="image/*" multiple>');
+            $('.images').append('<input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="image-' + (+$(this).attr('id').split('-')[1] + 1) + '" accept="image/*">');
         }
     });
 </script>
