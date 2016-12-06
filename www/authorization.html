@@ -5,29 +5,29 @@
     <title>Title</title>
 </head>
 <body>
-<div id="authorization">
-    <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="email" value="test@mail.com" placeholder="email">
-    <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="password" value="qwerty12" placeholder="password">
+<div id="authorization" style="display: none">
+    <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="email" placeholder="email">
+    <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="password" placeholder="password">
     <button style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="button" id="send">Enter</button>
 </div>
-<div id="add-news" style="display: none">
+<div id="add-news" >
     <form id="add-news-form" enctype="multipart/form-data">
         <textarea id="title" placeholder="title" rows="3" maxlength="300" style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box; resize: none"></textarea>
         <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="hashtag1" placeholder="hashtag1">
         <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="hashtag2" placeholder="hashtag2">
         <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="hashtag3" placeholder="hashtag3">
-        <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="coord" placeholder="">
-        <input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="images" accept="image/*" multiple>
+        <div class="images">
+            <input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="image-1" accept="image/*">
+        </div>
         <input type="submit" style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" value="Add">
     </form>
-    <button style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="button" id="coord_butt">Get coordinates</button>
 </div>
 
 <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
 <script>
     $('#send').click(function() {
         $.ajax({
-            url: "http://"+$('#url').val()+":8080/login",
+            url: "login",
             data: ({
                 email: $('#email').val(),
                 password: $('#password').val()
@@ -49,32 +49,6 @@
             }
         });
     });
-
-    function onSuccess(position) {
-        alert('success');
-        $('#coord').val(position.coords.latitude + ";" + position.coords.longitude);
-        /*alert('Latitude: '          + position.coords.latitude          + '\n' +
-                'Longitude: '         + position.coords.longitude         + '\n' +
-                'Altitude: '          + position.coords.altitude          + '\n' +
-                'Accuracy: '          + position.coords.accuracy          + '\n' +
-                'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
-                'Heading: '           + position.coords.heading           + '\n' +
-                'Speed: '             + position.coords.speed             + '\n' +
-                'Timestamp: '         + position.timestamp                + '\n');*/
-    };
-
-    function onError(error) {
-        alert('Coordinates error: code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
-    }
-
-    $('#coord_butt').click(function() {
-        var options = {
-            enableHighAccuracy: true,
-            maximumAge: 10000
-        }
-        navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
-    });
-
     $('#add-news-form').submit(function(e) {
         e.preventDefault();
         var data = new FormData();
@@ -84,16 +58,18 @@
                 data.append($(this).attr('id'), $(this).val());
             }
         });
-        var fileControl = document.getElementById('images');
-        for(var i = 0; i < fileControl.files.length; i++) {
-            data.append('file', fileControl.files[i]);
-        }
-        /*for (var key of data.keys()) {
+        $(this).find('.images input').each(function() {
+            var fileControl = document.getElementById($(this).attr('id'));
+            if(fileControl.files.length > 0) {
+                data.append($(this).attr('id'), fileControl.files[0]);
+            }
+        });
+        for (var key of data.keys()) {
             console.log(key + ' - ' + data.get(key));
-        }*/
+        }
         $.ajax({
             type: "POST",
-            url: "http://"+$('#url').val()+":8080/addNews",
+            url: "addNews",
             data: data,
             processData: false,
             contentType: false,
@@ -106,11 +82,14 @@
                 }
             },
             error: function (xhr) {
-                //alert('Ошибка сервера');
-                alert(xhr.status);
-                alert(xhr.responseText);
+                alert('Ошибка сервера');
             }
         });
+    });
+    $('.images').on('change', 'input', function() {
+        if($(this).is(':last-child') && $('.images input').length < 8) {
+            $('.images').append('<input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="image-' + (+$(this).attr('id').split('-')[1] + 1) + '" accept="image/*">');
+        }
     });
 </script>
 </body>
