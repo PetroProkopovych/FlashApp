@@ -17,10 +17,12 @@
         <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="hashtag1" placeholder="hashtag1">
         <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="hashtag2" placeholder="hashtag2">
         <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="hashtag3" placeholder="hashtag3">
+        <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="coordinates" placeholder="">
         <div class="images">
             <input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="image-1" accept="image/*">
         </div>
         <input type="submit" style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" value="Add">
+        <button style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="button" id="coord_butt">Get coordinates</button>
     </form>
 </div>
 
@@ -28,7 +30,7 @@
 <script>
     $('#send').click(function() {
         $.ajax({
-            url: "login",
+            url: "http://"+$('#url').val()+":8080/login",
             data: ({
                 email: $('#email').val(),
                 password: $('#password').val()
@@ -48,6 +50,8 @@
             },
             error: function (xhr) {
                 alert('Ошибка сервера');
+                alert(xhr.status);
+                alert(xhr.responseText);
             }
         });
     });
@@ -72,7 +76,7 @@
         var boundary=Math.random().toString().substr(2);
         $.ajax({
             type: "POST",
-            url: "http://192.168.1.39:8080/addNews",
+            url: "http://"+$('#url').val()+":8080/addNews",
             data: data,
             processData: false,
             contentType: false,
@@ -87,6 +91,8 @@
             },
             error: function (xhr) {
                 alert('Ошибка сервера');
+                alert(xhr.status);
+                alert(xhr.responseText);
             }
         });
     });
@@ -94,6 +100,32 @@
         if($(this).is(':last-child') && $('.images input').length < 8) {
             $('.images').append('<input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="image-' + (+$(this).attr('id').split('-')[1] + 1) + '" accept="image/*">');
         }
+    });
+
+    function onSuccess(position) {
+        alert('success');
+        $('#coordinates').val(position.coords.latitude + ";" + position.coords.longitude);
+        /*alert('Latitude: '          + position.coords.latitude          + '\n' +
+         'Longitude: '         + position.coords.longitude         + '\n' +
+         'Altitude: '          + position.coords.altitude          + '\n' +
+         'Accuracy: '          + position.coords.accuracy          + '\n' +
+         'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
+         'Heading: '           + position.coords.heading           + '\n' +
+         'Speed: '             + position.coords.speed             + '\n' +
+         'Timestamp: '         + position.timestamp                + '\n');*/
+    };
+
+    function onError(error) {
+        alert('Coordinates error: code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
+    }
+
+    $('#coord_butt').click(function() {
+        var options = {
+            enableHighAccuracy: true,
+            maximumAge: 10000,
+            timeout: 5000
+        }
+        navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
     });
 </script>
 </body>
