@@ -1,9 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!--
+    Customize this policy to fit your own app's needs. For more guidance, see:
+        https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+    Some notes:
+        * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+        * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+        * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+            * Enable inline JS: add 'unsafe-inline' to default-src
+    -->
+    <!--<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">-->
     <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
     <meta charset="UTF-8">
-    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <!--<link rel="stylesheet" type="text/css" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">-->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="js/jquery-1.5.0.mobile.min.css">
+    <style>
+        /* For avoiding title truncation in wp8 */
+        .ui-header .ui-title {
+            overflow: visible !important;
+        }
+        /* For fixing the absolute position issue for the default cordova gen page*/
+        #cjp-accordion1 .app {
+            left: 5px !important;
+            margin: 5px !important;
+            position: relative !important;
+        }
+    </style>
+    <title>Hello World</title>
 </head>
 <body>
 <div id="authorization">
@@ -19,7 +48,7 @@
         <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="hashtag3" placeholder="hashtag3">
         <input style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="text" id="coordinates" placeholder="">
         <div class="images">
-            <input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="image-1" accept="image/*">
+            <input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="image-1" accept="image/* " data-role="none">
         </div>
         <input type="submit" style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" value="Add">
         <button style="width: calc(100% - 20px); margin: 10px; padding: 10px; display: block; box-sizing: border-box" type="button" id="coord_butt">Get coordinates</button>
@@ -73,7 +102,6 @@
         for (var key of data.keys()) {
             console.log(key + ' - ' + data.get(key));
         }
-        var boundary=Math.random().toString().substr(2);
         $.ajax({
             type: "POST",
             url: "http://"+$('#url').val()+":8080/addNews",
@@ -98,7 +126,7 @@
     });
     $('.images').on('change', 'input', function() {
         if($(this).is(':last-child') && $('.images input').length < 8) {
-            $('.images').append('<input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="image-' + (+$(this).attr('id').split('-')[1] + 1) + '" accept="image/*">');
+            $('.images').append('<input type="file" style="margin-left: 10px; padding: 10px; width: 100%;" id="image-' + (+$(this).attr('id').split('-')[1] + 1) + '" accept="image/*" data-role="none">');
         }
     });
 
